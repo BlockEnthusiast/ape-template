@@ -279,8 +279,8 @@ def mint(shares: uint256, receiver: address=msg.sender) -> bool:
 
     assert receiver not in [empty(address), self]
 
-    self.totalSupply += amount
-    self.balanceOf[receiver] += amount
+    self.totalSupply += shares
+    self.balanceOf[receiver] += shares
 
     log Deposit(msg.sender, receiver, 0, shares)
 
