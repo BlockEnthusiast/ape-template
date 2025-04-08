@@ -262,9 +262,33 @@ def mint(shares: uint256, receiver: address=msg.sender) -> uint256:
     log Deposit(msg.sender, receiver, assets, shares)
     return assets
 
+{%- elif cookiecutter.ERC4626 == 'y' and cookiecutter.mintable == 'y'%}
+
+def mint(shares: uint256, receiver: address=msg.sender) -> bool:
+    """
+    @notice Function to mint tokens without deposits
+    @param receiver The address that will receive the minted tokens.
+    @param amount The amount of tokens to mint.
+    @return A boolean that indicates if the operation was successful.
+    """
+    {% if cookiecutter.minter_role == "y" %}
+    assert msg.sender == self.owner or self.isMinter[msg.sender], "Access is denied."
+    {%- else %}
+    assert msg.sender == self.owner "Access is denied."
+    {%- endif %}
+
+    assert receiver not in [empty(address), self]
+
+    self.totalSupply += amount
+    self.balanceOf[receiver] += amount
+
+    log Deposit(msg.sender, receiver, 0, shares)
+
+    return True
 {%- endif %}
 
 {%- if cookiecutter.ERC4626 == 'n' and cookiecutter.mintable == 'y'%}
+
 @external
 def mint(receiver: address, amount: uint256) -> bool:
     """
